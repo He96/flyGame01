@@ -18,10 +18,11 @@ def pic2py(picture_name):
 
 
 if __name__ == '__main__':
-    pics = ["img/bang0.png", "img/bang1.png", "img/bang2.png", "img/bang3.png","img/bg1.jpg",
-            "img/bg2.jpg","img/dan.png","img/dan1.png","img/dan3.png","img/dan4.png","img/GG1.jpg",
-            "img/me.png","img/other.png"
-            ]
-    for i in pics:
-        pic2py(i)
+    # pics = ["img/gou.jpg", "img/bang1.png", "img/bang2.png", "img/bang3.png","img/bg1.jpg",
+    #         "img/bg2.jpg","img/dan.png","img/dan1.png","img/dan3.png","img/dan4.png","img/GG1.jpg",
+    #         "img/me.png","img/other.png"
+     #       ]
+    #pics = ['img/gou.png']
+    #for i in pics:
+    #     pic2py(i)
     print("ok")

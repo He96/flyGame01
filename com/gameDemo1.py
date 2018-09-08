@@ -19,9 +19,10 @@ from dan4_png import img as bs_dan4
 from GG1_jpg import img as bs_GG1
 from me_png import img as bs_me
 from other_png import img as bs_other
+from gou_png import img as bs_gou
 
 imgArray = ['bang0.png','bang1.png','bang2.png','bang3.png','bg1.jpg','bg2.jpg','dan.png'
-                ,'dan1.png','dan3.png','dan4.png','GG1.jpg','me.png','other.png']
+                ,'dan1.png','dan3.png','dan4.png','GG1.jpg','me.png','other.png','gou.png']
 tmp1 = open('bang0.png', 'wb')
 tmp1.write(base64.b64decode(bs_bang0))
 tmp1.close()
@@ -61,6 +62,9 @@ tmp12.close()
 tmp13 = open('other.png', 'wb')
 tmp13.write(base64.b64decode(bs_other))
 tmp13.close()
+tmp13 = open('gou.png', 'wb')
+tmp13.write(base64.b64decode(bs_gou))
+tmp13.close()
 bg1 = 'bg1.jpg'
 background_image = 'bg2.jpg'
 plain_image = 'me.png'
@@ -76,6 +80,7 @@ bang2_image = 'bang2.png'
 bang3_image = 'bang3.png'
 # game over
 gameOver_image = 'GG1.jpg'
+gou_image = 'gou.png'
 
 def moveImg(imgArray):
     for item in imgArray:
@@ -187,6 +192,7 @@ def play():
     dan1 = pygame.image.load(dan1_image)
     dan3 = pygame.image.load(dan3_image)
     dan4 = pygame.image.load(dan4_image)
+    gou = pygame.image.load(gou_image)
     # GG
     gameover = pygame.image.load(gameOver_image)
     # 剪切读入的图片
@@ -206,7 +212,7 @@ def play():
     # W
     bullet2_surface = dan1.subsurface(pygame.Rect(0, 0, 34, 32))
     # E
-    bullet3_surface = dan3.subsurface(pygame.Rect(0, 0, 128, 128))
+    bullet3_surface = gou.subsurface(pygame.Rect(0, 0, 128, 128))
     # R
     bullet4_surface = dan4.subsurface(pygame.Rect(0, 0, 128, 128))
     # 选择技能
@@ -314,11 +320,18 @@ def play():
                     B_K = 2
                     bullet_surface = bullet2_surface
                     pygame.display.update()
+                elif event.key == pygame.K_e:
+                    # 触发E
+                    time.sleep(0.2)
+                    K_S = 30
+                    B_K = 3
+                    bullet_surface = bullet3_surface
+                    pygame.display.update()
                 elif event.key == pygame.K_r:
                     # 触发R
                     K_S = 25
                     B_K = 3
-                    time.sleep(0.5)
+                    time.sleep(0.3)
                     bullet_surface = bullet4_surface
                     pygame.display.update()
         hero.move(offset)
