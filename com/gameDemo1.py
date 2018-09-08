@@ -19,10 +19,10 @@ from dan4_png import img as bs_dan4
 from GG1_jpg import img as bs_GG1
 from me_png import img as bs_me
 from other_png import img as bs_other
-from gou_png import img as bs_gou
+from gou3_png import img as bs_gou
 
 imgArray = ['bang0.png','bang1.png','bang2.png','bang3.png','bg1.jpg','bg2.jpg','dan.png'
-                ,'dan1.png','dan3.png','dan4.png','GG1.jpg','me.png','other.png','gou.png']
+                ,'dan1.png','dan3.png','dan4.png','GG1.jpg','me.png','other.png','gou3.png']
 tmp1 = open('bang0.png', 'wb')
 tmp1.write(base64.b64decode(bs_bang0))
 tmp1.close()
@@ -62,7 +62,7 @@ tmp12.close()
 tmp13 = open('other.png', 'wb')
 tmp13.write(base64.b64decode(bs_other))
 tmp13.close()
-tmp13 = open('gou.png', 'wb')
+tmp13 = open('gou3.png', 'wb')
 tmp13.write(base64.b64decode(bs_gou))
 tmp13.close()
 bg1 = 'bg1.jpg'
@@ -80,7 +80,7 @@ bang2_image = 'bang2.png'
 bang3_image = 'bang3.png'
 # game over
 gameOver_image = 'GG1.jpg'
-gou_image = 'gou.png'
+gou_image = 'gou3.png'
 
 def moveImg(imgArray):
     for item in imgArray:
@@ -113,6 +113,11 @@ def play():
             self.rect.top -= self.speed
             if self.rect.top < -self.rect.height:
                 self.kill()
+        # 敌方子弹移动
+        def update1(self):
+            self.rect.top += (self.speed*1.5)
+            if self.rect.top > self.rect.height:
+                self.kill()
 
     # 玩家类
     class Hero(pygame.sprite.Sprite):
@@ -121,10 +126,13 @@ def play():
             self.image = hero_surface
             self.rect = self.image.get_rect()
             self.rect.topleft = hero_init_pos
+           # self.rect.topright = hero_init_pos
             self.speed = 6
             self.is_kill = False  # GG
             # 子弹1的Group
             self.bullets1 = pygame.sprite.Group()
+            # 子弹2的Group
+            self.bullets2 = pygame.sprite.Group()
 
         # 定义移动规则
         def move(self, offset):
@@ -145,9 +153,10 @@ def play():
 
         # 控制射击
         def single_shoot(self, bullet1_surface):
-            bullet1 = Bullet(bullet1_surface, self.rect.midtop)
+            bullet1 = Bullet(bullet1_surface, self.rect.topleft)
+            bullet2 = Bullet(bullet1_surface,self.rect.topright)
             self.bullets1.add(bullet1)
-
+            self.bullets2.add(bullet2)
     # 敌机类
     class Enemy(pygame.sprite.Sprite):
         def __init__(self, enemy_surface, enemy_init_pos):
@@ -156,6 +165,7 @@ def play():
             self.rect = self.image.get_rect()
             self.rect.topleft = enemy_init_pos
             self.speed = 2
+            self.bullets1 = pygame.sprite.Group()
             # 爆炸动画索引
             self.down_index = 0
 
@@ -163,6 +173,11 @@ def play():
             self.rect.top += self.speed
             if self.rect.top > SCREEN_HEIGHT:
                 self.kill()
+
+        def single_shoot(self, bullet1_surface):
+            bullet1 = Bullet(bullet1_surface, self.rect.topleft)
+            bullet1.update1()
+            self.bullets1.add(bullet1)
 
     hero_down_index = 1  # 玩家爆炸效果
 
@@ -212,7 +227,7 @@ def play():
     # W
     bullet2_surface = dan1.subsurface(pygame.Rect(0, 0, 34, 32))
     # E
-    bullet3_surface = gou.subsurface(pygame.Rect(0, 0, 128, 128))
+    bullet3_surface = gou.subsurface(pygame.Rect(0, 0, 48, 48))
     # R
     bullet4_surface = dan4.subsurface(pygame.Rect(0, 0, 128, 128))
     # 选择技能
@@ -264,12 +279,18 @@ def play():
             hero.single_shoot(bullet_surface)
         # 控制子弹
         hero.bullets1.update()
+        hero.bullets2.update()
         # 绘制子弹
         hero.bullets1.draw(screen)
+        hero.bullets2.draw(screen)
         # 产生敌机
         if ticks % 30 == 0:
             enemy = Enemy(enemy1_surface,
                           [randint(0, SCREEN_WIDTH - enemy1_surface.get_width()), -enemy1_surface.get_height()])
+            enemy.bullets1.update()
+            enemy.bullets1.draw(screen)
+            if ticks % K_S == 0:
+                enemy.single_shoot(bullet1_surface)
             enemy1_group.add(enemy)
         # 控制敌机
         enemy1_group.update()
@@ -277,6 +298,7 @@ def play():
         enemy1_group.draw(screen)
         # 监测敌机与子弹碰撞
         enemy1_down_group.add(pygame.sprite.groupcollide(enemy1_group, hero.bullets1, True, True))
+        enemy1_down_group.add(pygame.sprite.groupcollide(enemy1_group, hero.bullets2, True, True))
         for enemy1_down in enemy1_down_group:
             screen.blit(enemy1_down_surface[enemy1_down.down_index], enemy1_down.rect)
             if ticks % (ANIMATE_CYCLE // 2) == 0:
@@ -334,6 +356,8 @@ def play():
                     time.sleep(0.3)
                     bullet_surface = bullet4_surface
                     pygame.display.update()
+                elif event.key == pygame.K_t:
+                    hero.is_kill = True
         hero.move(offset)
     # 结束游戏
     screen.blit(gameover, (0, 0))

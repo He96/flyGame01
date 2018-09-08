@@ -24,5 +24,5 @@ if __name__ == '__main__':
      #       ]
     #pics = ['img/gou.png']
     #for i in pics:
-    #     pic2py(i)
+    pic2py('gou3.png')
     print("ok")
